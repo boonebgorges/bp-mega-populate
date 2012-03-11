@@ -95,7 +95,7 @@ class BP_Mega_Populate {
 
 		$url = wp_nonce_url( $url, 'bpmp' );
 
-		$per_page = 800;
+		$per_page = 500;
 
 		$start = isset( $_GET['bpmp_start'] ) ? $_GET['bpmp_start'] : 0;
 		$end   = $start + $per_page <= $total_number ? $start + $per_page : $total_number;
@@ -118,7 +118,7 @@ class BP_Mega_Populate {
 		?>
 
 		<script type="text/javascript">
-			setTimeout( 'reload();', 2000 );
+			setTimeout( 'reload();', 1000 );
 			function reload() {
 				window.location = '<?php echo $url ?>';
 			}
@@ -151,7 +151,7 @@ class BP_Mega_Populate {
 
 		// get a component item that actually has activity
 		$component = 'settings';
-		$no_ac_comps = array( 'settings', 'messages', 'xprofile' );
+		$no_ac_comps = array( 'settings', 'messages', 'members', 'forums', 'blogs' );
 		while ( in_array( $component, $no_ac_comps ) ) {
 			$component = array_rand( $bp->active_components );
 		}
@@ -242,11 +242,14 @@ class BP_Mega_Populate {
 				
 				break;
 
-			case 'members' :
-return;
-				$types = array(	'activity_update', 'activity_comment' );
-				$key   = array_rand( $types );
-				$type  = $types[$key];
+			case 'xprofile' :
+				$type = 'new_member';
+				
+				$action = sprintf( __( '%s became a registered member', 'buddypress' ), bp_core_get_userlink( $user_id ) );
+				
+				break;
+			
+			default :
 				break;
 
 		}
