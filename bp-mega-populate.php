@@ -230,22 +230,20 @@ class BP_Mega_Populate {
 
 				break;
 
-			case 'forums' :
-				$types = array(	'joined_group', 'activity_comment' );
-				$key   = array_rand( $types );
-				$type  = $types[$key];
-
-				break;
-
 			case 'friends' :
-				$types = array(	'activity_update', 'activity_comment' );
-				$key   = array_rand( $types );
-				$type  = $types[$key];
-
+				$type = 'friendship_created';
+				$secondary_item_id = $this->get_random_user_id();
+				$item_id = $this->get_random_friendship_id();
+				
+				$initiator_link = bp_core_get_userlink( $user_id );
+				$friend_link = bp_core_get_userlink( $secondary_item_id );
+				
+				$action = sprintf( __( '%1$s and %2$s are now friends', 'buddypress' ), $friend_link, $initiator_link );
+				
 				break;
 
 			case 'members' :
-
+return;
 				$types = array(	'activity_update', 'activity_comment' );
 				$key   = array_rand( $types );
 				$type  = $types[$key];
@@ -302,10 +300,10 @@ class BP_Mega_Populate {
 	function get_random_group_id() {
 		global $wpdb, $bp;
 
-		return $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_groups} ORDER BY RAND() LIMIT 1" ) );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name} ORDER BY RAND() LIMIT 1" ) );
 	}
 	
-	function get_random_group_id() {
+	function get_random_topic_id() {
 		global $wpdb, $bp, $bbdb;
 
 		do_action( 'bbpress_init' );
@@ -319,12 +317,18 @@ class BP_Mega_Populate {
 		do_action( 'bbpress_init' );
 		
 		if ( $topic_id ) {
-			$sql = $wpdb->prepare( "SELECT post_id FROM {$bbdb->posts} WHERE topic_id = {$topic_id} ORDER BY RAND() LIMIT 1" ) 
+			$sql = $wpdb->prepare( "SELECT post_id FROM {$bbdb->posts} WHERE topic_id = {$topic_id} ORDER BY RAND() LIMIT 1" );
 		} else {
 			$sql = $wpdb->prepare( "SELECT post_id FROM {$bbdb->posts} ORDER BY RAND() LIMIT 1" );
 		}
 		
 		return $wpdb->get_var( $sql );
+	}
+	
+	function get_random_friendship_id() {
+		global $wpdb, $bp;
+		
+		return $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$bp->friends->table_name} ORDER BY RAND() LIMIT 1" ) );
 	}
 }
 new BP_Mega_Populate;
