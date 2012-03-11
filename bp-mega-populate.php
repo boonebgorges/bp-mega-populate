@@ -54,13 +54,25 @@ class BP_Mega_Populate {
 
 				<tr>
 					<th scope="row">
-						Number
+						Total number to create
 					</th>
 
 					<td>
-						<input type="text" name="bpmp_number" />
+						<input type="text" name="bpmp_number" value="1000" />
 					</td>
 				</tr>
+				
+				<tr>
+					<th scope="row">
+						Number to create per pageload
+					</th>
+
+					<td>
+						<input type="text" name="bpmp_per_page" value="200" />
+					</td>
+				</tr>
+				
+				
 
 				</tbody>
 				</table>
@@ -86,7 +98,7 @@ class BP_Mega_Populate {
 
 		$url = add_query_arg( 'page', 'bp-mega-populate', admin_url( 'tools.php' ) );
 		$url = add_query_arg( 'bpmp_submit', 'Submit', $url );
-
+		
 		$total_number = $_GET['bpmp_number'];
 		$url = add_query_arg( 'bpmp_number', $total_number, $url );
 
@@ -95,7 +107,8 @@ class BP_Mega_Populate {
 
 		$url = wp_nonce_url( $url, 'bpmp' );
 
-		$per_page = 500;
+		$per_page = isset( $_GET['bpmp_per_page'] ) ? (int)$_GET['bpmp_per_page'] : 500;
+		$url = add_query_arg( 'bpmp_per_page', $per_page, $url );
 
 		$start = isset( $_GET['bpmp_start'] ) ? $_GET['bpmp_start'] : 0;
 		$end   = $start + $per_page <= $total_number ? $start + $per_page : $total_number;
@@ -111,7 +124,7 @@ class BP_Mega_Populate {
 					break;
 			}
 		}
-		echo "Processed $start through $end<br />";
+		echo "Processed $start through $end<br /> Processing...";
 
 		$url = add_query_arg( 'bpmp_start', $end, $url );
 		//echo $url; die();
