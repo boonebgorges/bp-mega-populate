@@ -72,6 +72,17 @@ class BP_Mega_Populate {
 					</td>
 				</tr>
 				
+				<tr>
+					<th scope="row">
+						Exclude activity comments
+					</th>
+
+					<td>
+						<input type="checkbox" name="bpmp_skip_acomments" value="1" />
+						<p class="description">Activity comments require a large amount of processing power (as the MPTT tree must be recalculated with each new item). Excluding them from the creation process will make it the bulk creation process a lot faster.</p> 
+					</td>
+				</tr>
+				
 				
 
 				</tbody>
@@ -98,6 +109,10 @@ class BP_Mega_Populate {
 
 		$url = add_query_arg( 'page', 'bp-mega-populate', admin_url( 'tools.php' ) );
 		$url = add_query_arg( 'bpmp_submit', 'Submit', $url );
+		
+		if ( !empty( $_GET['bpmp_skip_acomments'] ) ) {
+			$url = add_query_arg( 'bpmp_skip_acomments', '1', $url );
+		}
 		
 		$total_number = $_GET['bpmp_number'];
 		$url = add_query_arg( 'bpmp_number', $total_number, $url );
@@ -143,24 +158,6 @@ class BP_Mega_Populate {
 
 	function create_activity() {
 		global $bp;
-		// Create some arguments
-		$defaults = array(
-			'id'                => false, // Pass an existing activity ID to update an existing entry.
-
-			'action'            => '',    // The activity action - e.g. "Jon Doe posted an update"
-			'content'           => '',    // Optional: The content of the activity item e.g. "BuddyPress is awesome guys!"
-
-			'component'         => false, // The name/ID of the component e.g. groups, profile, mycomponent
-			'type'              => false, // The activity type e.g. activity_update, profile_updated
-			'primary_link'      => '',    // Optional: The primary URL for this item in RSS feeds (defaults to activity permalink)
-
-			'user_id'           => bp_loggedin_user_id(), // Optional: The user to record the activity for, can be false if this activity is not for a user.
-			'item_id'           => false, // Optional: The ID of the specific item being recorded, e.g. a blog_id
-			'secondary_item_id' => false, // Optional: A second ID used to further filter e.g. a comment_id
-			'recorded_time'     => bp_core_current_time(), // The GMT time that this activity was recorded
-			'hide_sitewide'     => false, // Should this be hidden on the sitewide activity stream?
-			'is_spam'           => false, // Is this activity item to be marked as spam?
-		);
 
 		// get a component item that actually has activity
 		$component = 'settings';
@@ -180,9 +177,13 @@ class BP_Mega_Populate {
 
 		switch( $component ) {
 			case 'activity' :
-				$types = array(	'activity_update', 'activity_comment' );
-				$key   = array_rand( $types );
-				$type  = $types[$key];
+				if ( !empty( $_GET['bpmp_skip_acomments'] ) ) {
+					$type = 'activity_update';
+				} else {
+					$types = array(	'activity_update', 'activity_comment' );
+					$key   = array_rand( $types );
+					$type  = $types[$key];
+				}
 				
 				if ( $type == 'activity_comment' ) {
 					$item_id = $this->get_random_activity_id();
