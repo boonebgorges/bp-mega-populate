@@ -170,7 +170,7 @@ class BP_Mega_Populate {
 		
 		$item_id = $secondary_item_id = 0;
 		
-		$content = $this->lorem->generate( 8, 250 );
+		$content = $this->lorem->generate( rand( 8, 250 ) );
 		$user_id = $this->get_random_user_id();
 		
 		$recorded_time = $this->get_random_recorded_time();
