@@ -30,10 +30,10 @@ class BBG_Lorem_Ipsum {
 	}
 
 	public function generate( $number_of_words = 5 ) {
-		$keys = array_rand( $this->words, $number_of_words );
 
 		$string_a = array();
-		foreach( $keys as $key ) {
+		for( $i = 1; $i <= $number_of_words; $i++ ) {
+			$key = array_rand( $this->words );
 			$string_a[] = $this->words[$key];
 		}
 
