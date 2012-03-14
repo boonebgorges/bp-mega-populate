@@ -48,6 +48,7 @@ class BP_Mega_Populate {
 					<td>
 						<select name="bpmp_content_type">
 							<option value="activity"><?php _e( 'Activity', 'buddypress' ) ?></option>
+							<option value="members"><?php _e( 'Members', 'buddypress' ) ?></option>
 						</select>
 					</td>
 				</tr>
@@ -74,7 +75,7 @@ class BP_Mega_Populate {
 				
 				<tr>
 					<th scope="row">
-						Exclude activity comments
+						Exclude activity comments (applies only to Activity)
 					</th>
 
 					<td>
@@ -136,6 +137,10 @@ class BP_Mega_Populate {
 			switch( $content_type ) {
 				case 'activity' :
 					$this->create_activity();
+					break;
+				
+				case 'members' :
+					$this->create_member();
 					break;
 			}
 		}
@@ -281,6 +286,40 @@ class BP_Mega_Populate {
 		);
 		
 		bp_activity_add( $args );
+	}
+	
+	function create_member() {
+		// using 3 names for a better shot at uniqueness
+		$name = $this->lorem->generate( 3 );
+		
+		$name_safe = $name_safe_unique = sanitize_user( $name );
+		$append = 1;
+		while ( username_exists( $name_safe_unique ) ) {
+			$name_safe_unique = $name_safe . $append;
+			$append++;
+		}
+		
+		$email = $name_safe_unique . '@not.a.real.domain.local';
+		
+		$args = array(
+			'user_login'   => $name_safe_unique,
+			'user_pass'    => 'password',
+			'display_name' => ucwords( $name ),
+			'user_email'   => $email
+		);
+		
+		$user_id = wp_insert_user( $args );
+		
+		if ( !$user_id || is_wp_error( $user_id ) )
+			return;
+		
+		// set a dummy last_activity so they show up in directories
+		bp_update_user_meta( $user_id, 'last_activity', $this->get_random_recorded_time() );
+		
+		// record a fullname
+		xprofile_set_field_data( 1, $user_id, ucwords( $name ) );
+		
+		// todo: xprofile
 	}
 	
 	function get_random_recorded_time() {

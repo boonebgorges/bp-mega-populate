@@ -4,6 +4,7 @@ This plugin creates huge amounts of BP data, for use with testing scaling issues
 
 This plugin currently supports:
 
+- Members
 - Activity
 
 ## Usage
