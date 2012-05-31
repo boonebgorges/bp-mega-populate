@@ -15,3 +15,6 @@ This plugin currently supports:
 ## Warnings
 
 This will create huge amounts of data. Only use on development environments!!!
+
+Note:
+To populate activities, this plugin requires that Buddypress's Discussion Forums is enabled and setup. Otherwise you may get a BB_Query not found error.
